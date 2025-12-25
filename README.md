@@ -2,6 +2,12 @@
 
 A full-stack React Native social media application built with Expo, Node.js, Express, and MongoDB. This project demonstrates clean architecture, proper state management, and RESTful API design.
 
+## 🎥 Demo Video
+
+
+https://github.com/user-attachments/assets/3ec929ab-8861-4f27-b3ea-3cc4c07d6bff
+
+
 ## 📱 Features
 
 ### Core Features
