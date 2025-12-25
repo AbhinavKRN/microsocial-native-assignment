@@ -35,8 +35,14 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({
         }
         setPagination(response.data.pagination);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching posts:', error);
+      if (error.response) {
+        console.error('Response status:', error.response.status);
+        console.error('Response data:', error.response.data);
+        console.error('Request URL:', error.config?.url);
+        console.error('Base URL:', error.config?.baseURL);
+      }
       throw error;
     } finally {
       setLoading(false);

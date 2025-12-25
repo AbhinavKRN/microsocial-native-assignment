@@ -12,7 +12,11 @@ const userRoutes = require('./routes/users');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -22,7 +26,7 @@ mongoose
   .then(() => console.log('✅ MongoDB connected successfully'))
   .catch((err) => {
     console.error('❌ MongoDB connection error:', err);
-    process.exit(1);
+    console.error('⚠️  Server will continue but database operations will fail');
   });
 
 app.use('/api/auth', authRoutes);
@@ -30,7 +34,23 @@ app.use('/api/posts', postRoutes);
 app.use('/api/users', userRoutes);
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'MicroSocial API is running' });
+  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  res.json({ 
+    status: 'OK', 
+    message: 'MicroSocial API is running',
+    database: dbStatus
+  });
+});
+
+app.get('/', (req, res) => {
+  res.json({ message: 'MicroSocial API - Use /api endpoints' });
+});
+
+app.use((req, res, next) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.method} ${req.originalUrl} not found`,
+  });
 });
 
 app.use((err, req, res, next) => {
@@ -42,8 +62,9 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on ${HOST}:${PORT}`);
 });
 
